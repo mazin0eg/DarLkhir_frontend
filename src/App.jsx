@@ -4,29 +4,33 @@ import Hero from './components/sections/Hero';
 import About from './components/sections/About';
 import Contact from './components/sections/Contact';
 import Footer from './components/layout/Footer';
+import EmailVerification from './components/auth/EmailVerification';
 
 function App() {
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isVerificationPage, setIsVerificationPage] = useState(false);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (!event.target.closest('nav')) {
-        setIsLoginOpen(false);
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    // Check if this is a verification page by looking for token in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    
+    if (token) {
+      setIsVerificationPage(true);
+    }
   }, []);
 
-  const toggleLoginMenu = (e) => {
-    e.stopPropagation();
-    setIsLoginOpen(!isLoginOpen);
-  };
+  // If this is a verification page, show only the verification component
+  if (isVerificationPage) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <EmailVerification />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900 scroll-smooth">
-      <Navbar toggleLoginMenu={toggleLoginMenu} isLoginOpen={isLoginOpen} />
+      <Navbar />
       <Hero />
       <About />
       <Contact />

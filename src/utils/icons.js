@@ -1,5 +1,6 @@
 import { 
   LogIn, 
+  LogOut,
   ChevronDown, 
   Heart, 
   Wallet, 
@@ -7,11 +8,19 @@ import {
   Menu, 
   Phone, 
   Mail, 
-  MapPin 
+  MapPin,
+  Eye,
+  EyeOff,
+  User,
+  Lock,
+  CheckCircle,
+  XCircle,
+  RotateCcw
 } from 'lucide-react';
 
 export {
   LogIn,
+  LogOut,
   ChevronDown,
   Heart,
   Wallet,
@@ -19,5 +28,12 @@ export {
   Menu,
   Phone,
   Mail,
-  MapPin
+  MapPin,
+  Eye,
+  EyeOff,
+  User,
+  Lock,
+  CheckCircle,
+  XCircle,
+  RotateCcw
 };

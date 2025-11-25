@@ -1,5 +1,4 @@
 import { Heart, Wallet, LogIn } from '../../utils/icons';
-
 const About = () => {
   return (
     <div id="about" className="py-20 bg-zinc-50">

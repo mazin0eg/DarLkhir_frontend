@@ -1,117 +1,166 @@
-import { useState } from 'react';
-import { LogIn, ChevronDown, Heart, Wallet, X, Menu } from '../../utils/icons';
+import { useState, useEffect } from 'react';
+import { User, LogIn, LogOut, Menu, X } from '../../utils/icons';
+import AuthContainer from '../auth/AuthContainer';
+import { authService } from '../../services/authService';
 
-const Navbar = ({ toggleLoginMenu, isLoginOpen }) => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+const Navbar = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [authMode, setAuthMode] = useState(null); // null, 'login', 'register'
+  const [user, setUser] = useState(null);
 
-  const handleSSORedirect = (app) => {
-    console.log(`Redirecting to ${app} app`);
+  useEffect(() => {
+    const currentUser = authService.getCurrentUser();
+    setUser(currentUser);
+  }, []);
+
+  const handleAuthSuccess = () => {
+    const currentUser = authService.getCurrentUser();
+    setUser(currentUser);
+    setAuthMode(null);
+  };
+
+  const handleLogout = () => {
+    authService.logout();
+    setUser(null);
+  };
+
+  const openLogin = () => {
+    setAuthMode('login');
+    setIsMenuOpen(false);
+  };
+
+  const openRegister = () => {
+    setAuthMode('register');
+    setIsMenuOpen(false);
+  };
+
+  const closeAuth = () => {
+    setAuthMode(null);
   };
 
   return (
-    <nav className="bg-black text-white sticky top-0 z-50 border-b-4 border-red-600 shadow-lg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          <div className="shrink-0 flex items-center gap-2 cursor-pointer">
-            <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">D</span>
+    <>
+      <nav className="bg-white shadow-sm fixed w-full z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <span className="text-2xl font-bold text-blue-600">DarLkhir</span>
             </div>
-            <span className="font-bold text-2xl tracking-wider">DARLKHIR</span>
-          </div>
 
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-8">
-              <a href="#home" className="hover:text-red-500 transition-colors px-3 py-2 rounded-md font-medium">
+            <div className="hidden md:flex items-center space-x-8">
+              <a href="#home" className="text-gray-700 hover:text-blue-600 transition-colors">
                 Home
               </a>
-              <a href="#about" className="hover:text-red-500 transition-colors px-3 py-2 rounded-md font-medium">
-                About Us
+              <a href="#about" className="text-gray-700 hover:text-blue-600 transition-colors">
+                About
               </a>
-              <a href="#contact" className="hover:text-red-500 transition-colors px-3 py-2 rounded-md font-medium">
+              <a href="#contact" className="text-gray-700 hover:text-blue-600 transition-colors">
                 Contact
               </a>
               
-              <div className="relative">
-                <button 
-                  onClick={toggleLoginMenu}
-                  className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full font-medium flex items-center gap-2 transition-all"
-                >
-                  <LogIn size={18} />
-                  Login
-                  <ChevronDown size={16} className={`transition-transform ${isLoginOpen ? 'rotate-180' : ''}`} />
-                </button>
-
-                {isLoginOpen && (
-                  <div className="absolute right-0 mt-3 w-48 bg-white rounded-lg shadow-xl py-2 text-black border border-gray-200">
+              <div className="flex items-center space-x-4">
+                {user ? (
+                  <div className="flex items-center space-x-4">
+                    <span className="text-gray-700">
+                      Welcome, {user.firstName}!
+                    </span>
                     <button 
-                      onClick={() => handleSSORedirect('Darna')}
-                      className="w-full text-left px-4 py-3 hover:bg-red-50 flex items-center gap-3 group transition-colors"
+                      onClick={handleLogout}
+                      className="flex items-center space-x-2 px-4 py-2 text-red-600 border border-red-600 rounded-lg hover:bg-red-50 transition-colors"
                     >
-                      <div className="p-2 bg-red-100 rounded-full text-red-600 group-hover:bg-red-600 group-hover:text-white transition-colors">
-                        <Heart size={16} />
-                      </div>
-                      <span className="font-medium">Darna App</span>
-                    </button>
-                    <div className="h-px bg-gray-100 mx-2 my-1"></div>
-                    <button 
-                      onClick={() => handleSSORedirect('Tirlire')}
-                      className="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center gap-3 group transition-colors"
-                    >
-                      <div className="p-2 bg-gray-100 rounded-full text-gray-600 group-hover:bg-black group-hover:text-white transition-colors">
-                        <Wallet size={16} />
-                      </div>
-                      <span className="font-medium">Tirlire App</span>
+                      <LogOut size={18} />
+                      <span>Logout</span>
                     </button>
                   </div>
+                ) : (
+                  <>
+                    <button 
+                      onClick={openRegister}
+                      className="flex items-center space-x-2 px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                    >
+                      <User size={18} />
+                      <span>Register</span>
+                    </button>
+                    
+                    <button 
+                      onClick={openLogin}
+                      className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      <LogIn size={18} />
+                      <span>Login</span>
+                    </button>
+                  </>
                 )}
               </div>
             </div>
-          </div>
 
-          <div className="-mr-2 flex md:hidden">
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-red-500 focus:outline-none"
-            >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {isMobileMenuOpen && (
-        <div className="md:hidden bg-zinc-900 pb-4">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <a href="#home" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
-              Home
-            </a>
-            <a href="#about" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
-              About
-            </a>
-            <a href="#contact" className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
-              Contact
-            </a>
-            <div className="pt-4 space-y-2 px-3">
-              <p className="text-gray-400 text-sm uppercase tracking-wider font-semibold">
-                Login to:
-              </p>
-              <button 
-                onClick={() => handleSSORedirect('Darna')} 
-                className="w-full bg-red-600 text-white px-4 py-2 rounded-md flex items-center gap-2 justify-center"
+            <div className="md:hidden">
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="text-gray-700 hover:text-blue-600 p-2"
               >
-                <Heart size={16} /> Darna
-              </button>
-              <button 
-                onClick={() => handleSSORedirect('Tirlire')} 
-                className="w-full bg-white text-black px-4 py-2 rounded-md flex items-center gap-2 justify-center"
-              >
-                <Wallet size={16} /> Tirlire
+                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
             </div>
           </div>
+
+          {isMenuOpen && (
+            <div className="md:hidden">
+              <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
+                <a href="#home" className="block px-3 py-2 text-gray-700 hover:text-blue-600">
+                  Home
+                </a>
+                <a href="#about" className="block px-3 py-2 text-gray-700 hover:text-blue-600">
+                  About
+                </a>
+                <a href="#contact" className="block px-3 py-2 text-gray-700 hover:text-blue-600">
+                  Contact
+                </a>
+                <div className="flex flex-col space-y-2 px-3 py-2">
+                  {user ? (
+                    <div className="space-y-2">
+                      <p className="text-sm text-gray-600">Welcome, {user.firstName}!</p>
+                      <button 
+                        onClick={handleLogout}
+                        className="flex items-center justify-center space-x-2 px-4 py-2 text-red-600 border border-red-600 rounded-lg"
+                      >
+                        <LogOut size={18} />
+                        <span>Logout</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <button 
+                        onClick={openRegister}
+                        className="flex items-center justify-center space-x-2 px-4 py-2 text-blue-600 border border-blue-600 rounded-lg"
+                      >
+                        <User size={18} />
+                        <span>Register</span>
+                      </button>
+                      <button 
+                        onClick={openLogin}
+                        className="flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
+                      >
+                        <LogIn size={18} />
+                        <span>Login</span>
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
+      </nav>
+
+      {authMode && (
+        <AuthContainer
+          initialMode={authMode}
+          onClose={closeAuth}
+          onSuccess={handleAuthSuccess}
+        />
       )}
-    </nav>
+    </>
   );
 };
 
